@@ -7,13 +7,13 @@
 <title>ساخت کانفیگ WireGuard</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-  
+
   * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
   }
-  
+
   body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #0f0f23 100%);
@@ -21,7 +21,7 @@
     min-height: 100vh;
     overflow-x: hidden;
   }
-  
+
   /* Background Pattern */
   body::before {
     content: '';
@@ -36,20 +36,20 @@
       radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
     z-index: -1;
   }
-  
+
   .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
   }
-  
+
   /* Header */
   .header {
     text-align: center;
     margin-bottom: 40px;
     animation: fadeInDown 1s ease-out;
   }
-  
+
   .logo {
     width: 80px;
     height: 80px;
@@ -61,13 +61,13 @@
     justify-content: center;
     animation: pulse 2s infinite;
   }
-  
+
   .logo svg {
     width: 40px;
     height: 40px;
     color: white;
   }
-  
+
   .title {
     font-size: 3rem;
     font-weight: 700;
@@ -77,13 +77,13 @@
     background-clip: text;
     margin-bottom: 10px;
   }
-  
+
   .subtitle {
     font-size: 1.2rem;
     color: #a0a0a0;
     font-weight: 300;
   }
-  
+
   /* Main Form */
   .form-container {
     background: rgba(23, 23, 23, 0.8);
@@ -95,32 +95,32 @@
     animation: fadeInUp 1s ease-out;
     transition: transform 0.3s ease;
   }
-  
+
   .form-container:hover {
     transform: translateY(-5px);
   }
-  
+
   .form-grid {
     display: grid;
     gap: 25px;
   }
-  
+
   .form-group {
     position: relative;
   }
-  
+
   .form-row {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 20px;
   }
-  
+
   .form-row-three {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
     gap: 20px;
   }
-  
+
   label {
     display: block;
     margin-bottom: 8px;
@@ -129,18 +129,18 @@
     font-size: 0.95rem;
     transition: color 0.3s ease;
   }
-  
+
   label svg {
     width: 16px;
     height: 16px;
     margin-left: 8px;
     vertical-align: middle;
   }
-  
+
   .form-group:hover label {
     color: #667eea;
   }
-  
+
   input, select, textarea {
     width: 100%;
     padding: 16px 20px;
@@ -152,24 +152,24 @@
     transition: all 0.3s ease;
     outline: none;
   }
-  
+
   input:focus, select:focus, textarea:focus {
     border-color: #667eea;
     box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
     background: rgba(40, 40, 40, 0.9);
     transform: scale(1.02);
   }
-  
+
   input::placeholder, textarea::placeholder {
     color: #666;
   }
-  
+
   .help-text {
     font-size: 0.8rem;
     color: #888;
     margin-top: 5px;
   }
-  
+
   /* Generate Button */
   .generate-btn {
     width: 100%;
@@ -186,7 +186,7 @@
     overflow: hidden;
     margin-top: 20px;
   }
-  
+
   .generate-btn::before {
     content: '';
     position: absolute;
@@ -197,51 +197,51 @@
     background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
     transition: left 0.5s;
   }
-  
+
   .generate-btn:hover::before {
     left: 100%;
   }
-  
+
   .generate-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
   }
-  
+
   .generate-btn:active {
     transform: translateY(0);
   }
-  
+
   /* Output Section */
   .output-section {
     margin-top: 50px;
     animation: fadeInUp 1s ease-out 0.3s both;
   }
-  
+
   .output-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 20px;
   }
-  
+
   .output-header .title-part {
     display: flex;
     align-items: center;
   }
-  
+
   .output-header svg {
     width: 24px;
     height: 24px;
     color: #4ade80;
     margin-left: 12px;
   }
-  
+
   .output-header h2 {
     font-size: 1.8rem;
     font-weight: 700;
     color: #e0e0e0;
   }
-  
+
   .download-btn {
     padding: 12px 20px;
     background: linear-gradient(135deg, #10b981, #059669);
@@ -253,20 +253,20 @@
     transition: all 0.3s ease;
     display: none;
   }
-  
+
   .download-btn.show {
     display: block;
   }
-  
+
   .download-btn:hover {
     transform: translateY(-2px);
     box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
   }
-  
+
   .output-container {
     position: relative;
   }
-  
+
   .output-textarea {
     width: 100%;
     height: 300px;
@@ -281,7 +281,7 @@
     resize: none;
     box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
   }
-  
+
   .copy-btn {
     position: absolute;
     top: 15px;
@@ -296,22 +296,22 @@
     opacity: 0;
     transform: translateY(-10px);
   }
-  
+
   .copy-btn.show {
     opacity: 1;
     transform: translateY(0);
   }
-  
+
   .copy-btn:hover {
     background: rgba(60, 60, 60, 0.9);
     transform: scale(1.1);
   }
-  
+
   .copy-btn svg {
     width: 16px;
     height: 16px;
   }
-  
+
   /* Key Generation Section */
   .key-section {
     background: rgba(30, 30, 30, 0.6);
@@ -320,19 +320,19 @@
     padding: 20px;
     margin-bottom: 20px;
   }
-  
+
   .key-section h3 {
     color: #667eea;
     margin-bottom: 15px;
     font-size: 1.1rem;
   }
-  
+
   .key-buttons {
     display: flex;
     gap: 10px;
     flex-wrap: wrap;
   }
-  
+
   .key-btn {
     padding: 10px 16px;
     background: rgba(102, 126, 234, 0.2);
@@ -343,22 +343,22 @@
     transition: all 0.3s ease;
     font-size: 0.9rem;
   }
-  
+
   .key-btn:hover {
     background: rgba(102, 126, 234, 0.3);
     transform: translateY(-2px);
   }
-  
+
   /* Custom DNS */
   .dns-custom {
     margin-top: 15px;
     display: none;
   }
-  
+
   .dns-custom.show {
     display: block;
   }
-  
+
   /* Notifications */
   .notification {
     position: fixed;
@@ -373,23 +373,23 @@
     transition: transform 0.3s ease;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
   }
-  
+
   .notification.show {
     transform: translateX(0);
   }
-  
+
   .notification.success {
     background: linear-gradient(135deg, #10b981, #059669);
   }
-  
+
   .notification.error {
     background: linear-gradient(135deg, #ef4444, #dc2626);
   }
-  
+
   .notification.warning {
     background: linear-gradient(135deg, #f59e0b, #d97706);
   }
-  
+
   /* Animations */
   @keyframes fadeInDown {
     from {
@@ -401,7 +401,7 @@
       transform: translateY(0);
     }
   }
-  
+
   @keyframes fadeInUp {
     from {
       opacity: 0;
@@ -412,7 +412,7 @@
       transform: translateY(0);
     }
   }
-  
+
   @keyframes pulse {
     0%, 100% {
       transform: scale(1);
@@ -421,29 +421,29 @@
       transform: scale(1.05);
     }
   }
-  
+
   /* Responsive */
   @media (max-width: 768px) {
     .container {
       padding: 15px;
     }
-    
+
     .title {
       font-size: 2rem;
     }
-    
+
     .form-container {
       padding: 25px;
     }
-    
+
     .form-row, .form-row-three {
       grid-template-columns: 1fr;
     }
-    
+
     .key-buttons {
       flex-direction: column;
     }
-    
+
     .output-header {
       flex-direction: column;
       gap: 15px;
@@ -478,7 +478,7 @@
     </div>
 
     <form id="wgForm" class="form-grid">
-      
+
       <!-- Private Key -->
       <div class="form-group">
         <label>
@@ -551,7 +551,7 @@
             <option value="8.8.8.8,8.8.4.4">Google DNS</option>
             <option value="custom">دستی (Custom)</option>
           </select>
-          
+
           <div class="dns-custom" id="customDnsSection">
             <input type="text" id="customDns" placeholder="DNS سفارشی خود را وارد کنید (مثال: 1.1.1.1,8.8.8.8)" style="margin-top: 10px;" />
           </div>
@@ -585,6 +585,18 @@
         </div>
       </div>
 
+      <!-- Config Name -->
+      <div class="form-group">
+        <label>
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+          </svg>
+          نام کانفیگ
+        </label>
+        <input type="text" id="configName" placeholder="نام کانفیگ خود را وارد کنید (مثال: MyVPN)" value="MyWireGuard" />
+        <div class="help-text">این نام برای فایل دانلودی استفاده می‌شود</div>
+      </div>
+
       <!-- Generate Button -->
       <button type="button" class="generate-btn" onclick="generateConfig()">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px; margin-left: 8px; vertical-align: middle;">
@@ -604,7 +616,7 @@
         </svg>
         <h2>کانفیگ WireGuard شما</h2>
       </div>
-      
+
       <button class="download-btn" id="downloadBtn" onclick="downloadConfig()">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px; margin-left: 8px; vertical-align: middle;">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
@@ -612,10 +624,10 @@
         دانلود فایل
       </button>
     </div>
-    
+
     <div class="output-container">
       <textarea id="output" class="output-textarea" readonly placeholder="کانفیگ شما اینجا نمایش داده خواهد شد..."></textarea>
-      
+
       <button class="copy-btn" id="copyBtn" onclick="copyToClipboard()" title="کپی کردن">
         <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
@@ -627,8 +639,7 @@
 
 <script>
   // CIDR ranges for different countries
-const countryIPRanges = {
-  ip_ranges = {
+const cidrRanges = {
   "turkey": { 
     "ipv4": [
       "2.56.60.0/23",
@@ -835,7 +846,6 @@ const countryIPRanges = {
       "2001:19f0:4000::/48"
     ]
   }
-}
 };
 
   function getIpFromCidr(cidr) {
@@ -846,9 +856,9 @@ const countryIPRanges = {
   async function generatePrivateKey() {
     try {
       showNotification('در حال تولید کلید خصوصی...', 'warning');
-      
+
       const privateKey = await generateRealWireGuardPrivateKey();
-      
+
       document.getElementById('privateKey').value = privateKey;
       showNotification('کلید خصوصی تولید شد!', 'success');
     } catch (error) {
@@ -860,13 +870,13 @@ const countryIPRanges = {
   async function generateKeyPair() {
     try {
       showNotification('در حال تولید جفت کلید...', 'warning');
-      
+
       const privateKey = await generateRealWireGuardPrivateKey();
       const publicKey = await getPublicKeyFromPrivate(privateKey);
-      
+
       document.getElementById('privateKey').value = privateKey;
       document.getElementById('serverPublicKey').value = publicKey;
-      
+
       // نمایش کلید عمومی در پاپ آپ
       const modal = document.createElement('div');
       modal.style.cssText = `
@@ -881,7 +891,7 @@ const countryIPRanges = {
         justify-content: center;
         z-index: 1000;
       `;
-      
+
       modal.innerHTML = `
         <div style="background: #1a1a1a; padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); max-width: 500px; text-align: center;">
           <h3 style="color: #667eea; margin-bottom: 20px;">کلیدهای تولید شده</h3>
@@ -895,7 +905,7 @@ const countryIPRanges = {
           <button onclick="this.parentElement.parentElement.remove()" style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer;">بستن</button>
         </div>
       `;
-      
+
       document.body.appendChild(modal);
       showNotification('جفت کلید تولید شد!', 'success');
     } catch (error) {
@@ -908,12 +918,12 @@ const countryIPRanges = {
   async function generateRealWireGuardPrivateKey() {
     const privateKeyBytes = new Uint8Array(32);
     crypto.getRandomValues(privateKeyBytes);
-    
+
     // اعمال ماسک برای کلید خصوصی Curve25519
     privateKeyBytes[0] &= 248;
     privateKeyBytes[31] &= 127;
     privateKeyBytes[31] |= 64;
-    
+
     return btoa(String.fromCharCode.apply(null, privateKeyBytes));
   }
 
@@ -921,20 +931,20 @@ const countryIPRanges = {
   async function getPublicKeyFromPrivate(privateKey) {
     // این یک شبیه‌سازی است - در واقعیت باید از الگوریتم Curve25519 استفاده کرد
     const privateKeyBytes = new Uint8Array(atob(privateKey).split('').map(c => c.charCodeAt(0)));
-    
+
     // تولید کلید عمومی بر اساس کلید خصوصی (شبیه‌سازی)
     const publicKeyBytes = new Uint8Array(32);
     for (let i = 0; i < 32; i++) {
       publicKeyBytes[i] = privateKeyBytes[i] ^ ((i * 37) % 256);
     }
-    
+
     return btoa(String.fromCharCode.apply(null, publicKeyBytes));
   }
 
   function toggleCustomDns() {
     const dnsSelect = document.getElementById('dnsSelect');
     const customSection = document.getElementById('customDnsSection');
-    
+
     if (dnsSelect.value === 'custom') {
       customSection.classList.add('show');
     } else {
@@ -945,7 +955,7 @@ const countryIPRanges = {
   async function generateConfig() {
     const privateKeyInput = document.getElementById("privateKey").value.trim();
     let privateKey = privateKeyInput;
-    
+
     if (!privateKey) {
       showNotification('لطفاً ابتدا کلید خصوصی تولید کنید', 'error');
       return;
@@ -959,7 +969,7 @@ const countryIPRanges = {
 
     const dnsSelect = document.getElementById("dnsSelect");
     let dnsRaw = dnsSelect.value;
-    
+
     // اگر DNS سفارشی انتخاب شده، از مقدار فیلد custom استفاده کن
     if (dnsRaw === 'custom') {
       const customDns = document.getElementById("customDns").value.trim();
@@ -969,7 +979,7 @@ const countryIPRanges = {
       }
       dnsRaw = customDns;
     }
-    
+
     const dnsVersion = document.getElementById("dnsVersion").value;
     const country = document.getElementById("countrySelect").value;
     const endpointVersion = document.getElementById("endpointVersion").value;
@@ -984,16 +994,31 @@ const countryIPRanges = {
       dnsList = [dnsRaw];
     }
 
+    // تولید DNS از رنج کشور
+    const ranges = cidrRanges[country];
+    let countryDns = "";
+    if (ranges) {
+      if (dnsVersion === "4" || dnsVersion === "46") {
+        const ipv4Range = ranges.ipv4[Math.floor(Math.random() * ranges.ipv4.length)];
+        countryDns = getIpFromCidr(ipv4Range);
+        dnsList.push(countryDns);
+      }
+      if (dnsVersion === "6" || dnsVersion === "46") {
+        const ipv6Range = ranges.ipv6[Math.floor(Math.random() * ranges.ipv6.length)];
+        countryDns = getIpFromCidr(ipv6Range);
+        dnsList.push(countryDns);
+      }
+    }
+
     // تنظیم DNS بر اساس نسخه
     if (dnsVersion === "6") {
-      dnsList = ["2606:4700:4700::1111", "2606:4700:4700::1001"]; // Cloudflare IPv6
+      dnsList = dnsList.concat(["2606:4700:4700::1111", "2606:4700:4700::1001"]); // Cloudflare IPv6
     } else if (dnsVersion === "46") {
       dnsList = dnsList.concat(["2606:4700:4700::1111", "2606:4700:4700::1001"]);
     }
 
     // تعیین IP Endpoint
     let endpointIp = "0.0.0.0";
-    const ranges = cidrRanges[country];
     if (ranges) {
       if (endpointVersion === "4") {
         endpointIp = getIpFromCidr(ranges.ipv4[0]);
@@ -1022,7 +1047,7 @@ PersistentKeepalive = 25`;
     document.getElementById("output").value = config;
     document.getElementById("copyBtn").classList.add("show");
     document.getElementById("downloadBtn").classList.add("show");
-    
+
     showNotification('کانفیگ WireGuard با موفقیت تولید شد!', 'success');
   }
 
@@ -1042,7 +1067,7 @@ PersistentKeepalive = 25`;
     const output = document.getElementById("output");
     output.select();
     output.setSelectionRange(0, 99999);
-    
+
     try {
       document.execCommand('copy');
       showNotification('کانفیگ کپی شد!', 'success');
@@ -1061,18 +1086,21 @@ PersistentKeepalive = 25`;
       showNotification('ابتدا کانفیگ تولید کنید', 'error');
       return;
     }
-    
+
+    const configName = document.getElementById("configName").value.trim() || 'MyWireGuard';
+    const fileName = `${configName}.conf`;
+
     const blob = new Blob([config], { type: 'text/plain' });
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'wireguard-config.conf';
+    a.download = fileName;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     window.URL.revokeObjectURL(url);
-    
-    showNotification('فایل کانفیگ دانلود شد!', 'success');
+
+    showNotification(`فایل ${fileName} دانلود شد!`, 'success');
   }
 
   function showNotification(message, type) {
@@ -1084,13 +1112,13 @@ PersistentKeepalive = 25`;
     const notification = document.createElement('div');
     notification.className = `notification ${type}`;
     notification.textContent = message;
-    
+
     document.body.appendChild(notification);
-    
+
     setTimeout(() => {
       notification.classList.add('show');
     }, 100);
-    
+
     setTimeout(() => {
       notification.classList.remove('show');
       setTimeout(() => {
@@ -1109,7 +1137,7 @@ PersistentKeepalive = 25`;
   // بارگذاری اولیه
   document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('privateKey').focus();
-    
+
     setTimeout(() => {
       showNotification('خوش آمدید! برای تولید کانفیگ، ابتدا کلید خصوصی تولید کنید', 'warning');
     }, 1000);

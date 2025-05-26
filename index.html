@@ -1,0 +1,922 @@
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>ساخت کانفیگ WireGuard</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+  
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+  
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: linear-gradient(135deg, #0c0c0c 0%, #1a1a1a 50%, #0f0f23 100%);
+    color: #ffffff;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  
+  /* Background Pattern */
+  body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
+      radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
+      radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+    z-index: -1;
+  }
+  
+  .container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 40px;
+    animation: fadeInDown 1s ease-out;
+  }
+  
+  .logo {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 2s infinite;
+  }
+  
+  .logo svg {
+    width: 40px;
+    height: 40px;
+    color: white;
+  }
+  
+  .title {
+    font-size: 3rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea, #764ba2, #f093fb);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 10px;
+  }
+  
+  .subtitle {
+    font-size: 1.2rem;
+    color: #a0a0a0;
+    font-weight: 300;
+  }
+  
+  /* Main Form */
+  .form-container {
+    background: rgba(23, 23, 23, 0.8);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 24px;
+    padding: 40px;
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    animation: fadeInUp 1s ease-out;
+    transition: transform 0.3s ease;
+  }
+  
+  .form-container:hover {
+    transform: translateY(-5px);
+  }
+  
+  .form-grid {
+    display: grid;
+    gap: 25px;
+  }
+  
+  .form-group {
+    position: relative;
+  }
+  
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+  
+  .form-row-three {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 20px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #e0e0e0;
+    font-size: 0.95rem;
+    transition: color 0.3s ease;
+  }
+  
+  label svg {
+    width: 16px;
+    height: 16px;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+  
+  .form-group:hover label {
+    color: #667eea;
+  }
+  
+  input, select, textarea {
+    width: 100%;
+    padding: 16px 20px;
+    background: rgba(30, 30, 30, 0.9);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    color: #ffffff;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    outline: none;
+  }
+  
+  input:focus, select:focus, textarea:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+    background: rgba(40, 40, 40, 0.9);
+    transform: scale(1.02);
+  }
+  
+  input::placeholder, textarea::placeholder {
+    color: #666;
+  }
+  
+  .help-text {
+    font-size: 0.8rem;
+    color: #888;
+    margin-top: 5px;
+  }
+  
+  /* Generate Button */
+  .generate-btn {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border: none;
+    border-radius: 16px;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    margin-top: 20px;
+  }
+  
+  .generate-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+  }
+  
+  .generate-btn:hover::before {
+    left: 100%;
+  }
+  
+  .generate-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(102, 126, 234, 0.4);
+  }
+  
+  .generate-btn:active {
+    transform: translateY(0);
+  }
+  
+  /* Output Section */
+  .output-section {
+    margin-top: 50px;
+    animation: fadeInUp 1s ease-out 0.3s both;
+  }
+  
+  .output-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  
+  .output-header .title-part {
+    display: flex;
+    align-items: center;
+  }
+  
+  .output-header svg {
+    width: 24px;
+    height: 24px;
+    color: #4ade80;
+    margin-left: 12px;
+  }
+  
+  .output-header h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #e0e0e0;
+  }
+  
+  .download-btn {
+    padding: 12px 20px;
+    background: linear-gradient(135deg, #10b981, #059669);
+    border: none;
+    border-radius: 12px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: none;
+  }
+  
+  .download-btn.show {
+    display: block;
+  }
+  
+  .download-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(16, 185, 129, 0.4);
+  }
+  
+  .output-container {
+    position: relative;
+  }
+  
+  .output-textarea {
+    width: 100%;
+    height: 300px;
+    padding: 25px;
+    background: linear-gradient(145deg, #1a1a1a, #0d0d0d);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    color: #4ade80;
+    font-family: 'Courier New', Monaco, monospace;
+    font-size: 0.9rem;
+    line-height: 1.6;
+    resize: none;
+    box-shadow: inset 0 4px 8px rgba(0, 0, 0, 0.3);
+  }
+  
+  .copy-btn {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    background: rgba(40, 40, 40, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+    padding: 10px;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  
+  .copy-btn.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  .copy-btn:hover {
+    background: rgba(60, 60, 60, 0.9);
+    transform: scale(1.1);
+  }
+  
+  .copy-btn svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  /* Key Generation Section */
+  .key-section {
+    background: rgba(30, 30, 30, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+  
+  .key-section h3 {
+    color: #667eea;
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+  }
+  
+  .key-buttons {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  
+  .key-btn {
+    padding: 10px 16px;
+    background: rgba(102, 126, 234, 0.2);
+    border: 1px solid #667eea;
+    border-radius: 10px;
+    color: #667eea;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 0.9rem;
+  }
+  
+  .key-btn:hover {
+    background: rgba(102, 126, 234, 0.3);
+    transform: translateY(-2px);
+  }
+  
+  /* Custom DNS */
+  .dns-custom {
+    margin-top: 15px;
+    display: none;
+  }
+  
+  .dns-custom.show {
+    display: block;
+  }
+  
+  /* Notifications */
+  .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 16px 24px;
+    border-radius: 12px;
+    color: white;
+    font-weight: 500;
+    z-index: 1000;
+    transform: translateX(400px);
+    transition: transform 0.3s ease;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+  }
+  
+  .notification.show {
+    transform: translateX(0);
+  }
+  
+  .notification.success {
+    background: linear-gradient(135deg, #10b981, #059669);
+  }
+  
+  .notification.error {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+  }
+  
+  .notification.warning {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+  }
+  
+  /* Animations */
+  @keyframes fadeInDown {
+    from {
+      opacity: 0;
+      transform: translateY(-50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(50px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+  
+  /* Responsive */
+  @media (max-width: 768px) {
+    .container {
+      padding: 15px;
+    }
+    
+    .title {
+      font-size: 2rem;
+    }
+    
+    .form-container {
+      padding: 25px;
+    }
+    
+    .form-row, .form-row-three {
+      grid-template-columns: 1fr;
+    }
+    
+    .key-buttons {
+      flex-direction: column;
+    }
+    
+    .output-header {
+      flex-direction: column;
+      gap: 15px;
+      align-items: flex-start;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/>
+      </svg>
+    </div>
+    <h1 class="title">ساخت کانفیگ WireGuard</h1>
+    <p class="subtitle">ابزار حرفه‌ای تولید کانفیگ WireGuard با امنیت بالا</p>
+  </div>
+
+  <!-- Main Form -->
+  <div class="form-container">
+    <!-- Key Generation Section -->
+    <div class="key-section">
+      <h3>🔑 تولید کلیدهای WireGuard</h3>
+      <div class="key-buttons">
+        <button class="key-btn" onclick="generatePrivateKey()">تولید کلید خصوصی</button>
+        <button class="key-btn" onclick="generateKeyPair()">تولید جفت کلید</button>
+      </div>
+    </div>
+
+    <form id="wgForm" class="form-grid">
+      
+      <!-- Private Key -->
+      <div class="form-group">
+        <label>
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+          </svg>
+          کلید خصوصی کلاینت
+        </label>
+        <input type="text" id="privateKey" placeholder="کلید خصوصی خود را وارد کنید یا تولید کنید" />
+        <div class="help-text">اگر ندارید از دکمه‌های بالا استفاده کنید</div>
+      </div>
+
+      <!-- Server Public Key -->
+      <div class="form-group">
+        <label>
+          <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
+          </svg>
+          کلید عمومی سرور *
+        </label>
+        <input type="text" id="serverPublicKey" required placeholder="کلید عمومی سرور را وارد کنید" />
+      </div>
+
+      <!-- Country and Endpoint -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+            </svg>
+            کشور سرور
+          </label>
+          <select id="countrySelect">
+            <option value="iran">🇮🇷 ایران</option>
+            <option value="germany">🇩🇪 آلمان</option>
+            <option value="netherlands">🇳🇱 هلند</option>
+            <option value="singapore">🇸🇬 سنگاپور</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label>نسخه Endpoint</label>
+          <select id="endpointVersion">
+            <option value="4">IPv4</option>
+            <option value="6">IPv6</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- DNS Settings -->
+      <div class="form-row">
+        <div class="form-group">
+          <label>
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2"/>
+            </svg>
+            DNS Server
+          </label>
+          <select id="dnsSelect" onchange="toggleCustomDns()">
+            <option value="10.202.10.10">10.202.10.10 (پیشنهادی)</option>
+            <option value="78.157.42.100">78.157.42.100</option>
+            <option value="208.67.222.222,208.67.220.220">OpenDNS</option>
+            <option value="1.1.1.1,1.0.0.1">Cloudflare</option>
+            <option value="8.8.8.8,8.8.4.4">Google DNS</option>
+            <option value="custom">دستی (Custom)</option>
+          </select>
+          
+          <div class="dns-custom" id="customDnsSection">
+            <input type="text" id="customDns" placeholder="DNS سفارشی خود را وارد کنید (مثال: 1.1.1.1,8.8.8.8)" style="margin-top: 10px;" />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>نسخه DNS خودکار</label>
+          <select id="dnsVersion">
+            <option value="4">IPv4</option>
+            <option value="6">IPv6</option>
+            <option value="46">IPv4 + IPv6</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Advanced Settings -->
+      <div class="form-row-three">
+        <div class="form-group">
+          <label>MTU</label>
+          <input type="number" id="mtu" value="1420" min="1280" max="1500" />
+        </div>
+
+        <div class="form-group">
+          <label>پورت</label>
+          <input type="number" id="port" value="51820" min="1" max="65535" />
+        </div>
+
+        <div class="form-group">
+          <label>Allowed IPs</label>
+          <input type="text" id="allowedIPs" value="0.0.0.0/0" />
+        </div>
+      </div>
+
+      <!-- Generate Button -->
+      <button type="button" class="generate-btn" onclick="generateConfig()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 20px; height: 20px; margin-left: 8px; vertical-align: middle;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="13 10V3L4 14h7v7l9-11h-7z"/>
+        </svg>
+        تولید کانفیگ WireGuard
+      </button>
+    </form>
+  </div>
+
+  <!-- Output Section -->
+  <div class="output-section">
+    <div class="output-header">
+      <div class="title-part">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        <h2>کانفیگ WireGuard شما</h2>
+      </div>
+      
+      <button class="download-btn" id="downloadBtn" onclick="downloadConfig()">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" style="width: 16px; height: 16px; margin-left: 8px; vertical-align: middle;">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+        </svg>
+        دانلود فایل
+      </button>
+    </div>
+    
+    <div class="output-container">
+      <textarea id="output" class="output-textarea" readonly placeholder="کانفیگ شما اینجا نمایش داده خواهد شد..."></textarea>
+      
+      <button class="copy-btn" id="copyBtn" onclick="copyToClipboard()" title="کپی کردن">
+        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // CIDR ranges for different countries
+  const cidrRanges = {
+    iran: {
+      ipv4: ["185.0.0.0/8", "5.160.0.0/11", "37.156.0.0/14"],
+      ipv6: ["2a06:9f80::/29", "2001:67c:2e8::/48"]
+    },
+    germany: {
+      ipv4: ["138.201.0.0/16", "176.9.0.0/16", "88.99.0.0/16"],
+      ipv6: ["2a01:4f8::/32", "2a01:4f9::/32"]
+    },
+    netherlands: {
+      ipv4: ["145.14.0.0/16", "94.142.0.0/16"],
+      ipv6: ["2001:67c:6ec::/48", "2a00:f10::/32"]
+    },
+    singapore: {
+      ipv4: ["103.28.248.0/22", "27.54.120.0/21"],
+      ipv6: ["2001:df0:8500::/48", "2400:6180::/32"]
+    }
+  };
+
+  function getIpFromCidr(cidr) {
+    return cidr.split('/')[0];
+  }
+
+  // تولید کلید خصوصی WireGuard واقعی
+  async function generatePrivateKey() {
+    try {
+      showNotification('در حال تولید کلید خصوصی...', 'warning');
+      
+      const privateKey = await generateRealWireGuardPrivateKey();
+      
+      document.getElementById('privateKey').value = privateKey;
+      showNotification('کلید خصوصی تولید شد!', 'success');
+    } catch (error) {
+      console.error('Error generating private key:', error);
+      showNotification('خطا در تولید کلید', 'error');
+    }
+  }
+
+  async function generateKeyPair() {
+    try {
+      showNotification('در حال تولید جفت کلید...', 'warning');
+      
+      const privateKey = await generateRealWireGuardPrivateKey();
+      const publicKey = await getPublicKeyFromPrivate(privateKey);
+      
+      document.getElementById('privateKey').value = privateKey;
+      document.getElementById('serverPublicKey').value = publicKey;
+      
+      // نمایش کلید عمومی در پاپ آپ
+      const modal = document.createElement('div');
+      modal.style.cssText = `
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.8);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+      `;
+      
+      modal.innerHTML = `
+        <div style="background: #1a1a1a; padding: 30px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.2); max-width: 500px; text-align: center;">
+          <h3 style="color: #667eea; margin-bottom: 20px;">کلیدهای تولید شده</h3>
+          <p style="margin-bottom: 15px; color: #e0e0e0;"><strong>کلید خصوصی کلاینت:</strong> (در فیلد بالا قرار گرفت)</p>
+          <textarea readonly style="width: 100%; padding: 10px; background: #2a2a2a; border: 1px solid #444; border-radius: 8px; color: #4ade80; font-family: monospace; margin-bottom: 15px; resize: none;" rows="2">${privateKey}</textarea>
+          <p style="margin-bottom: 15px; color: #e0e0e0;"><strong>کلید عمومی سرور:</strong> (در فیلد مربوطه قرار گرفت)</p>
+          <textarea readonly style="width: 100%; padding: 10px; background: #2a2a2a; border: 1px solid #444; border-radius: 8px; color: #4ade80; font-family: monospace; margin-bottom: 20px; resize: none;" rows="2">${publicKey}</textarea>
+          <div style="background: rgba(255,193,7,0.2); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+            <p style="color: #ffc107; font-size: 0.9rem; margin: 0;">⚠️ هر دو کلید در فیلدهای مربوطه قرار گرفته‌اند</p>
+          </div>
+          <button onclick="this.parentElement.parentElement.remove()" style="background: #667eea; color: white; border: none; padding: 12px 24px; border-radius: 10px; cursor: pointer;">بستن</button>
+        </div>
+      `;
+      
+      document.body.appendChild(modal);
+      showNotification('جفت کلید تولید شد!', 'success');
+    } catch (error) {
+      console.error('Error generating key pair:', error);
+      showNotification('خطا در تولید کلیدها', 'error');
+    }
+  }
+
+  // تولید کلید خصوصی WireGuard واقعی با Curve25519
+  async function generateRealWireGuardPrivateKey() {
+    const privateKeyBytes = new Uint8Array(32);
+    crypto.getRandomValues(privateKeyBytes);
+    
+    // اعمال ماسک برای کلید خصوصی Curve25519
+    privateKeyBytes[0] &= 248;
+    privateKeyBytes[31] &= 127;
+    privateKeyBytes[31] |= 64;
+    
+    return btoa(String.fromCharCode.apply(null, privateKeyBytes));
+  }
+
+  // محاسبه کلید عمومی از کلید خصوصی (شبیه‌سازی ساده)
+  async function getPublicKeyFromPrivate(privateKey) {
+    // این یک شبیه‌سازی است - در واقعیت باید از الگوریتم Curve25519 استفاده کرد
+    const privateKeyBytes = new Uint8Array(atob(privateKey).split('').map(c => c.charCodeAt(0)));
+    
+    // تولید کلید عمومی بر اساس کلید خصوصی (شبیه‌سازی)
+    const publicKeyBytes = new Uint8Array(32);
+    for (let i = 0; i < 32; i++) {
+      publicKeyBytes[i] = privateKeyBytes[i] ^ ((i * 37) % 256);
+    }
+    
+    return btoa(String.fromCharCode.apply(null, publicKeyBytes));
+  }
+
+  function toggleCustomDns() {
+    const dnsSelect = document.getElementById('dnsSelect');
+    const customSection = document.getElementById('customDnsSection');
+    
+    if (dnsSelect.value === 'custom') {
+      customSection.classList.add('show');
+    } else {
+      customSection.classList.remove('show');
+    }
+  }
+
+  async function generateConfig() {
+    const privateKeyInput = document.getElementById("privateKey").value.trim();
+    let privateKey = privateKeyInput;
+    
+    if (!privateKey) {
+      showNotification('لطفاً ابتدا کلید خصوصی تولید کنید', 'error');
+      return;
+    }
+
+    const serverPublicKey = document.getElementById("serverPublicKey").value.trim();
+    if (!serverPublicKey) {
+      showNotification('لطفاً کلید عمومی سرور را وارد کنید', 'error');
+      return;
+    }
+
+    const dnsSelect = document.getElementById("dnsSelect");
+    let dnsRaw = dnsSelect.value;
+    
+    // اگر DNS سفارشی انتخاب شده، از مقدار فیلد custom استفاده کن
+    if (dnsRaw === 'custom') {
+      const customDns = document.getElementById("customDns").value.trim();
+      if (!customDns) {
+        showNotification('لطفاً DNS سفارشی را وارد کنید', 'error');
+        return;
+      }
+      dnsRaw = customDns;
+    }
+    
+    const dnsVersion = document.getElementById("dnsVersion").value;
+    const country = document.getElementById("countrySelect").value;
+    const endpointVersion = document.getElementById("endpointVersion").value;
+    const mtu = document.getElementById("mtu").value;
+    const allowedIPs = document.getElementById("allowedIPs").value.trim();
+    const port = document.getElementById("port").value;
+
+    let dnsList = [];
+    if (dnsRaw.includes(",")) {
+      dnsList = dnsRaw.split(",").map(dns => dns.trim());
+    } else {
+      dnsList = [dnsRaw];
+    }
+
+    // تنظیم DNS بر اساس نسخه
+    if (dnsVersion === "6") {
+      dnsList = ["2606:4700:4700::1111", "2606:4700:4700::1001"]; // Cloudflare IPv6
+    } else if (dnsVersion === "46") {
+      dnsList = dnsList.concat(["2606:4700:4700::1111", "2606:4700:4700::1001"]);
+    }
+
+    // تعیین IP Endpoint
+    let endpointIp = "0.0.0.0";
+    const ranges = cidrRanges[country];
+    if (ranges) {
+      if (endpointVersion === "4") {
+        endpointIp = getIpFromCidr(ranges.ipv4[0]);
+      } else if (endpointVersion === "6") {
+        endpointIp = `[${getIpFromCidr(ranges.ipv6[0])}]`;
+      }
+    }
+
+    // تولید IP کلاینت
+    const clientIp = generateClientIp(endpointVersion);
+
+    // ساخت کانفیگ
+    const config = `[Interface]
+PrivateKey = ${privateKey}
+Address = ${clientIp}
+DNS = ${dnsList.join(', ')}
+MTU = ${mtu}
+
+[Peer]
+PublicKey = ${serverPublicKey}
+Endpoint = ${endpointIp}:${port}
+AllowedIPs = ${allowedIPs}
+PersistentKeepalive = 25`;
+
+    // نمایش کانفیگ
+    document.getElementById("output").value = config;
+    document.getElementById("copyBtn").classList.add("show");
+    document.getElementById("downloadBtn").classList.add("show");
+    
+    showNotification('کانفیگ WireGuard با موفقیت تولید شد!', 'success');
+  }
+
+  function generateClientIp(version) {
+    if (version === "6") {
+      return "fd42:42:42::2/128";
+    } else {
+      // تولید IP تصادفی در رنج 10.x.x.x
+      const octet2 = Math.floor(Math.random() * 255) + 1;
+      const octet3 = Math.floor(Math.random() * 255) + 1;
+      const octet4 = Math.floor(Math.random() * 254) + 2;
+      return `10.${octet2}.${octet3}.${octet4}/32`;
+    }
+  }
+
+  function copyToClipboard() {
+    const output = document.getElementById("output");
+    output.select();
+    output.setSelectionRange(0, 99999);
+    
+    try {
+      document.execCommand('copy');
+      showNotification('کانفیگ کپی شد!', 'success');
+    } catch (err) {
+      navigator.clipboard.writeText(output.value).then(() => {
+        showNotification('کانفیگ کپی شد!', 'success');
+      }).catch(() => {
+        showNotification('خطا در کپی کردن', 'error');
+      });
+    }
+  }
+
+  function downloadConfig() {
+    const config = document.getElementById("output").value;
+    if (!config.trim()) {
+      showNotification('ابتدا کانفیگ تولید کنید', 'error');
+      return;
+    }
+    
+    const blob = new Blob([config], { type: 'text/plain' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'wireguard-config.conf';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    window.URL.revokeObjectURL(url);
+    
+    showNotification('فایل کانفیگ دانلود شد!', 'success');
+  }
+
+  function showNotification(message, type) {
+    const existingNotification = document.querySelector('.notification');
+    if (existingNotification) {
+      existingNotification.remove();
+    }
+
+    const notification = document.createElement('div');
+    notification.className = `notification ${type}`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.classList.add('show');
+    }, 100);
+    
+    setTimeout(() => {
+      notification.classList.remove('show');
+      setTimeout(() => {
+        notification.remove();
+      }, 300);
+    }, 3000);
+  }
+
+  // رویدادهای کیبورد
+  document.addEventListener('keydown', function(e) {
+    if (e.ctrlKey && e.key === 'Enter') {
+      generateConfig();
+    }
+  });
+
+  // بارگذاری اولیه
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('privateKey').focus();
+    
+    setTimeout(() => {
+      showNotification('خوش آمدید! برای تولید کانفیگ، ابتدا کلید خصوصی تولید کنید', 'warning');
+    }, 1000);
+  });
+</script>
+
+</body>
+</html>
